@@ -22,18 +22,17 @@ class Main2Activity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
 
-        // Listener del boton animacion que ejecuta una tarea de animacion en segundo plano
-        animacion.setOnClickListener {
-            tareaSegundoPlano()
-        }
+        tareaSegundoPlano()
 
         var cont = 0
         domotta.setOnClickListener{
             if(cont == 0){
                 domotta.setImageResource(R.drawable.ballfaceclck)
+                tareaSegundoPlano()
                 cont+=1
             }else{
                 domotta.setImageResource(R.drawable.ballface)
+                tareaSegundoPlano()
                 cont-=1
             }
         }
@@ -42,35 +41,18 @@ class Main2Activity : AppCompatActivity() {
     /**
      * launch coroutine in UI context
      */
-
     var j : Int = 1
-    var job2 : Job? = null
-
     private fun tareaSegundoPlano() = launch(uiContext) {
-        // tarea child en el contexto de este hilo/thread
-        // contador de 30 hacia 1
-        val task2 = async(bgContext) {
-            for (i in 30 downTo 1) { // countdown from 10 to 1
-                //texto2.text = "Countdown $i ..." // update text
-                Log.d("Task2", "Contandor: ${i}")
-                delay(200) // wait half a second
-            }
-        }
-        job2 = task2
-        // non ui thread (child task)
-        // lanzamos la tarea
-        val result = task2.start()
-        // tambien podemos job2?.start()
-
         // domotta bajando/subiendo
-        // esta tarea es la tarea principal
         j *= -1
         // animamos a domotta, main task in UI
         val objectAnimator = ObjectAnimator.ofFloat(
                 domotta,
                 "translationY",
-                300f*j)
-        objectAnimator.duration = 3000L
+                300f*j
+        )
+
+        objectAnimator.duration = 500L
         objectAnimator.interpolator
         objectAnimator.start()
     }
